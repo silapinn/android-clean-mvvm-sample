@@ -20,12 +20,11 @@
 
     <TextView
         android:id="@+id/symbol_text_view"
-        style="@style/CoinSymbol.Bold"
+        style="@style/TopRankCoinSymbol.Bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textAlignment="center"
-        android:textColor="@color/black_grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/icon_image_view"
@@ -33,14 +32,11 @@
 
     <TextView
         android:id="@+id/name_text_view"
-        style="@style/CoinName"
+        style="@style/TopRankCoinName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:lineSpacingExtra="2sp"
         android:textAlignment="center"
-        android:textColor="@color/grey"
-        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/symbol_text_view"

@@ -27,7 +27,7 @@
     </style>
 
     <style name="CoinSymbol">
-        <item name="android:textColor">@color/grey</item>
+        <item name="android:textColor">@color/dark_grey</item>
         <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingExtra">2sp</item>
         <item name="android:textStyle">bold</item>
@@ -59,6 +59,30 @@
 
     <style name="CoinChange.Red">
         <item name="android:textColor">#F82D2D</item>
+    </style>
+
+    <!--Top rank coin styles-->
+    <style name="TopRankCoinSymbol">
+        <item name="android:textColor">@color/black_grey</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">2sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TopRankCoinSymbol.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TopRankCoinName">
+        <item name="android:textColor">@color/dark_grey</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">2sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="TopRankCoinName.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>
