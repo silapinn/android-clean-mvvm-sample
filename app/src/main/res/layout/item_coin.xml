@@ -20,11 +20,11 @@
 
     <TextView
         android:id="@+id/name_text_view"
+        style="@style/CoinName.Bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
-        android:textAppearance="@style/CoinName"
         app:layout_constraintEnd_toStartOf="@id/price_barrier"
         app:layout_constraintStart_toEndOf="@id/icon_image_view"
         app:layout_constraintTop_toTopOf="@id/icon_image_view"
@@ -32,21 +32,21 @@
 
     <TextView
         android:id="@+id/symbol_text_view"
+        style="@style/CoinSymbol.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:lineSpacingExtra="2sp"
-        android:textAppearance="@style/CoinSymbol.Bold"
         app:layout_constraintStart_toStartOf="@id/name_text_view"
         app:layout_constraintTop_toBottomOf="@id/name_text_view"
         tools:text="BTC" />
 
     <TextView
         android:id="@+id/price_text_view"
+        style="@style/CoinPrice.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:textAppearance="@style/CoinPrice.Bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/name_text_view"
         tools:text="$56,671.41180" />
@@ -56,10 +56,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textAppearance="@style/CoinChange.Green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/price_text_view"
         tools:drawableStartCompat="@drawable/ic_arrow_up"
+        tools:style="@style/CoinChange.Green"
         tools:text="1.07" />
 
     <androidx.constraintlayout.widget.Barrier
