@@ -1,7 +1,7 @@
 package com.example.cryptocurrency.presentation.coins
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.cryptocurrency.R
 
 class CoinsActivity : AppCompatActivity() {
