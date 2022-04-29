@@ -1,4 +1,5 @@
-package com.example.cryptocurrency.domain.repository
+package com.example.cryptocurrency.data.repository
 
-class BaseRepository {
+abstract class BaseNetworkRepository {
+
 }

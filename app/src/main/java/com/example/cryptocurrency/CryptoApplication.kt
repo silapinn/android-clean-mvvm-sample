@@ -5,6 +5,7 @@ import com.example.cryptocurrency.di.coinsModule
 import com.example.cryptocurrency.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.fragment.koin.fragmentFactory
 import org.koin.core.context.startKoin
 
 class CryptoApplication : Application() {
@@ -13,6 +14,7 @@ class CryptoApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@CryptoApplication)
+            fragmentFactory()
             modules(coinsModule, networkModule)
         }
     }

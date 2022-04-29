@@ -2,21 +2,31 @@ package com.example.cryptocurrency.domain.usecase
 
 import com.example.cryptocurrency.domain.model.Coin
 import com.example.cryptocurrency.domain.repository.CoinsRepository
+import kotlinx.coroutines.flow.*
 
 interface GetCoinsUseCase {
-    fun execute(
+    suspend fun execute(
         searchKeyword: String? = null,
         pageOffset: Int? = null,
         pageLimit: Int? = null
-    ): SingleUseCaseResult<List<Coin>>
+    ): Flow<SingleUseCaseResult<List<Coin>>>
 }
 
 class GetCoinsUseCaseImpl(private val coinsRepository: CoinsRepository) : GetCoinsUseCase {
-    override fun execute(
+
+    override suspend fun execute(
         searchKeyword: String?,
         pageOffset: Int?,
         pageLimit: Int?
-    ): SingleUseCaseResult<List<Coin>> {
-        TODO("Not yet implemented")
+    ): Flow<SingleUseCaseResult<List<Coin>>> = flow {
+        try {
+            coinsRepository
+                .getLatestCoins(searchKeyword, pageOffset, pageLimit)
+                .collect { coins ->
+                    emit(SingleUseCaseResult.Success(coins))
+                }
+        } catch (t: Throwable) {
+            emit(SingleUseCaseResult.Failure.GenericError(t))
+        }
     }
 }

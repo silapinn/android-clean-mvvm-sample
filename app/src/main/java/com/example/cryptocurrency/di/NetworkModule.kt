@@ -1,6 +1,8 @@
 package com.example.cryptocurrency.di
 
 import com.example.cryptocurrency.data.network.CoinApi
+import com.example.cryptocurrency.data.repository.datasource.CoinsDataSource
+import com.example.cryptocurrency.data.repository.datasource.CoinsRemoteDataSource
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
@@ -11,11 +13,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 val networkModule = module {
-    
+
     factory(named("baseUrl")) { "https://api.coinranking.com" }
 
     factory {
-        HttpLoggingInterceptor()
+        HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
     }
 
     factory {
@@ -37,6 +41,7 @@ val networkModule = module {
             .addConverterFactory(get())
             .build()
     }
+
 
     single<CoinApi> {
         get<Retrofit>().create(CoinApi::class.java)

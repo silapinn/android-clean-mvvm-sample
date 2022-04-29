@@ -1,11 +1,9 @@
 package com.example.cryptocurrency.presentation.coins
 
-import com.example.cryptocurrency.domain.model.Coin
-
 sealed class CoinsViewState {
 
     data class Default(
-        val topRankCoins: List<Coin>,
+        val topRankCoins: List<CoinItem>,
         val coins: List<CoinItem>
     ) : CoinsViewState()
 

@@ -1,6 +1,9 @@
 package com.example.cryptocurrency.di
 
+import com.example.cryptocurrency.data.mapper.CoinEntityMapper
 import com.example.cryptocurrency.data.repository.CoinsRepositoryImpl
+import com.example.cryptocurrency.data.repository.datasource.CoinsDataSource
+import com.example.cryptocurrency.data.repository.datasource.CoinsRemoteDataSource
 import com.example.cryptocurrency.domain.repository.CoinsRepository
 import com.example.cryptocurrency.domain.usecase.GetCoinDetailsUseCase
 import com.example.cryptocurrency.domain.usecase.GetCoinDetailsUseCaseImpl
@@ -17,12 +20,12 @@ val coinsModule = module {
 
     scope<CoinsActivity> {
         fragment {
-            CoinsFragment.newInstance()
+            CoinsFragment()
         }
-        viewModel {
-            CoinsViewModel(get())
-        }
+    }
 
+    viewModel {
+        CoinsViewModel(get())
     }
 
     factory<GetCoinsUseCase> {
@@ -33,7 +36,15 @@ val coinsModule = module {
         GetCoinDetailsUseCaseImpl(get())
     }
 
+    single {
+        CoinEntityMapper()
+    }
+
     single<CoinsRepository> {
         CoinsRepositoryImpl(get(), get())
+    }
+
+    single {
+        CoinsRemoteDataSource(get())
     }
 }

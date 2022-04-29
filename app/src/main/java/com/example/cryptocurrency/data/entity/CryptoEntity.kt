@@ -1,4 +1,5 @@
 package com.example.cryptocurrency.data.entity
 
-class CeyptoEntity {
-}
+data class CryptoEntity(
+    val coins: List<CoinEntity>
+)
