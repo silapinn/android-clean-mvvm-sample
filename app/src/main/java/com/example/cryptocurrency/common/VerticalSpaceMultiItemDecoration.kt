@@ -4,12 +4,12 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-typealias EnumOrdinal = Int
-private typealias HorizontalOffset = Int
+private typealias VerticalOffset = Int
 
-class HorizontalSpaceItemDecoration(
-    private val enumOrdinalToOffset: Map<EnumOrdinal, HorizontalOffset>
+class VerticalSpaceMultiItemDecoration(
+    private val enumOrdinalToOffset: Map<EnumOrdinal, VerticalOffset>
 ) : RecyclerView.ItemDecoration() {
+
     override fun getItemOffsets(
         outRect: Rect,
         view: View,
@@ -17,8 +17,7 @@ class HorizontalSpaceItemDecoration(
         state: RecyclerView.State
     ) {
         val viewTypeOrdinal = parent.getChildViewHolder(view).itemViewType
-        val margin: Int = enumOrdinalToOffset[viewTypeOrdinal] ?: 0
-        outRect.left = margin
-        outRect.right = margin
+        val space: Int = enumOrdinalToOffset[viewTypeOrdinal] ?: 0
+        outRect.bottom = space
     }
 }
