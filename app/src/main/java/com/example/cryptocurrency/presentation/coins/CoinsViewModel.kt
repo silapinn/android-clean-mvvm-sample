@@ -5,12 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cryptocurrency.R
 import com.example.cryptocurrency.domain.model.Coin
 import com.example.cryptocurrency.domain.usecase.GetCoinsUseCase
 import com.example.cryptocurrency.domain.usecase.SingleUseCaseResult
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel() {
@@ -36,7 +34,6 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
                         val coins = _coins.value?.toMutableList() ?: mutableListOf()
                         val latestCoins = result.data
                         val fromIndex = pageOffset * pageLimit
-                        val toIndex = fromIndex + pageLimit
 
                         Log.d("CoinsViewModel", "coin size = ${coins.size}")
                         Log.d("CoinsViewModel", "fromIndex = $fromIndex")
@@ -47,13 +44,10 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
                                 val replaceIndex = fromIndex + index
                                 coins[replaceIndex] = coin
                             }
-                            val coinItems = buildCoinItems(coins)
-                            _coinsViewState.value = CoinsViewState.Default(
-                                topRankCoins = coinItems.take(3),
-                                coins = coinItems
-                            )
                         }
                         _coins.value = coins
+                        val coinItems = buildCoinItemStates(coins)
+                        _coinsViewState.value = CoinsViewState.Default(coinItems)
                     }
                     is SingleUseCaseResult.Failure -> {
                         Log.d("CoinsViewModel", "error")
@@ -62,16 +56,56 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
             }
     }
 
-    private fun buildCoinItems(coins: List<Coin>): List<CoinItem> {
-        val coinItems: MutableList<CoinItem> =
-            coins.map { coin -> CoinItem.Default(coin) }.toMutableList()
+    private fun buildCoinItemStates(coins: List<Coin>): List<CoinItemState> {
+        val coinItemStates: MutableList<CoinItemState> = mutableListOf()
 
-        val coinCount = coinItems.size + 1 // number of coins = 20
+        val topRankCrypto: CoinItemState.TopRankCrypto =
+            buildTopRankCrypto(coins) ?: return emptyList()
+        val coinItems: List<CoinItemState> = buildCoinItem(coins)
+
+        coinItemStates.apply {
+            add(topRankCrypto)
+            add(CoinItemState.SectionHeadline(R.string.crypto_section_headline))
+            addAll(coinItems)
+        }
+        // Add top rank crypto
+
+
+        // Add crypto section headline and coins
+
+
+        return coinItemStates
+    }
+
+    private fun buildTopRankCrypto(coins: List<Coin>): CoinItemState.TopRankCrypto? {
+        val topRankCoins = if (coins.size >= 3) coins.take(3) else coins
+
+        return topRankCoins.takeIf { it.isNotEmpty() }?.let {
+            CoinItemState.TopRankCrypto(
+                textResId = R.string.top_rank_crypto_section_headline,
+                coins = it
+            )
+        }
+    }
+
+    private fun buildCoinItem(coins: List<Coin>): List<CoinItemState> {
+        val coinItemStates: MutableList<CoinItemState> = mutableListOf()
+        val normalCoins = if (coins.size >= 3) coins.drop(3) else return emptyList()
+
+        // Add coins
+        coinItemStates.addAll(normalCoins.map { coin -> CoinItemState.CryptoCoin(coin) })
+
+        // Add friend invite
+        val coinCount = normalCoins.size + 1 // number of coins = 20
         var friendInvitePosition = 5 // 5
         while (friendInvitePosition <= coinCount) { // 5 <= 20, 10 <= 20, 20 <= 20
-            coinItems.add(
+            coinItemStates.add(
                 friendInvitePosition - 1,
-                CoinItem.FriendInvite
+                CoinItemState.FriendInvite(
+                    iconResId = R.drawable.ic_gift,
+                    descriptionResId = R.string.item_friend_invite_description,
+                    actionResId = R.string.item_friend_invite_action
+                )
             ) // size = 21,  size = 22,  size = 23
             friendInvitePosition *= 2
         }
@@ -100,7 +134,8 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         //                      21 coin
         //                      22 coin
 
+        // Add section headline
 
-        return coinItems
+        return coinItemStates
     }
 }

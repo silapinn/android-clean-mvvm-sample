@@ -1,8 +1,10 @@
 package com.example.cryptocurrency.presentation.coins
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import com.example.cryptocurrency.databinding.ActivityCoinsBinding
 import org.koin.androidx.fragment.android.setupKoinFragmentFactory
 import org.koin.androidx.scope.ScopeActivity
@@ -18,8 +20,10 @@ class CoinsActivity : ScopeActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        Log.d("CoinsActivity", "support fragment")
+
         supportFragmentManager.commit {
-            add<CoinsFragment>(binding.root.id)
+            replace<CoinsFragment>(binding.root.id)
         }
     }
 }

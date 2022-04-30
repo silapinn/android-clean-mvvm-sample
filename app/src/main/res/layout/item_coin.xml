@@ -51,16 +51,17 @@
         app:layout_constraintTop_toTopOf="@id/name_text_view"
         tools:text="$56,671.41180" />
 
-    <TextView
+    <com.example.cryptocurrency.common.widget.PriceChangeTextView
         android:id="@+id/change_text_view"
+        style="@style/CoinChange"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/price_text_view"
         tools:drawableStartCompat="@drawable/ic_arrow_up"
-        tools:style="@style/CoinChange.Green"
-        tools:text="1.07" />
+        tools:text="1.07"
+        tools:textColor="@color/green" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/price_barrier"

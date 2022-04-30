@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_top_rank_crypto_horizontal_margin">16dp</dimen>
+    <dimen name="item_top_rank_crypto_vertical_space">22dp</dimen>
+    <dimen name="item_top_rank_coin_horizontal_space">8dp</dimen>
+    <dimen name="item_section_headline_horizontal_margin">16dp</dimen>
+    <dimen name="item_section_headline_vertical_space">12dp</dimen>
+    <dimen name="item_coin_horizontal_margin">8dp</dimen>
+    <dimen name="item_coin_vertical_space">12dp</dimen>
+    <dimen name="item_friend_invite_horizontal_space">8dp</dimen>
+    <dimen name="item_friend_invite_vertical_space">12dp</dimen>
+</resources>
