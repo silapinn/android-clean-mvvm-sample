@@ -1,16 +1,14 @@
 package com.example.cryptocurrency.presentation.coins
 
-import com.example.cryptocurrency.domain.model.Coin
-
 sealed class CoinsViewState {
 
     data class Default(
-        val items: List<CoinItemState>
+        val listItems: List<CoinListItem>
     ) : CoinsViewState()
 
     data class Searching(
         val keyword: String,
-        val coins: List<CoinItemState>
+        val coinLists: List<CoinListItem>
     ) : CoinsViewState()
 
     object Loading : CoinsViewState()

@@ -91,8 +91,8 @@ class CoinsFragment : Fragment() {
         viewModel.coinsViewState.observe(viewLifecycleOwner) { viewState ->
             when (viewState) {
                 is CoinsViewState.Default -> {
-                    coinsAdapter.coinItemStates = viewState.items
-                    Log.d("CoinsFragment", "${coinsAdapter.coinItemStates.size}")
+                    coinsAdapter.coinListItems = viewState.listItems
+                    Log.d("CoinsFragment", "${coinsAdapter.coinListItems.size}")
                 }
                 is CoinsViewState.Searching -> {
 

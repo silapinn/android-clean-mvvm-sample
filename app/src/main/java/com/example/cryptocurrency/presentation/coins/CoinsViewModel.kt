@@ -56,16 +56,16 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
             }
     }
 
-    private fun buildCoinItemStates(coins: List<Coin>): List<CoinItemState> {
-        val coinItemStates: MutableList<CoinItemState> = mutableListOf()
+    private fun buildCoinItemStates(coins: List<Coin>): List<CoinListItem> {
+        val coinListItems: MutableList<CoinListItem> = mutableListOf()
 
-        val topRankCrypto: CoinItemState.TopRankCrypto =
+        val topRankCrypto: CoinListItem.TopRankCrypto =
             buildTopRankCrypto(coins) ?: return emptyList()
-        val coinItems: List<CoinItemState> = buildCoinItem(coins)
+        val coinItems: List<CoinListItem> = buildCoinItem(coins)
 
-        coinItemStates.apply {
+        coinListItems.apply {
             add(topRankCrypto)
-            add(CoinItemState.SectionHeadline(R.string.crypto_section_headline))
+            add(CoinListItem.SectionHeadline(R.string.crypto_section_headline))
             addAll(coinItems)
         }
         // Add top rank crypto
@@ -74,34 +74,34 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         // Add crypto section headline and coins
 
 
-        return coinItemStates
+        return coinListItems
     }
 
-    private fun buildTopRankCrypto(coins: List<Coin>): CoinItemState.TopRankCrypto? {
+    private fun buildTopRankCrypto(coins: List<Coin>): CoinListItem.TopRankCrypto? {
         val topRankCoins = if (coins.size >= 3) coins.take(3) else coins
 
         return topRankCoins.takeIf { it.isNotEmpty() }?.let {
-            CoinItemState.TopRankCrypto(
+            CoinListItem.TopRankCrypto(
                 textResId = R.string.top_rank_crypto_section_headline,
                 coins = it
             )
         }
     }
 
-    private fun buildCoinItem(coins: List<Coin>): List<CoinItemState> {
-        val coinItemStates: MutableList<CoinItemState> = mutableListOf()
+    private fun buildCoinItem(coins: List<Coin>): List<CoinListItem> {
+        val coinListItems: MutableList<CoinListItem> = mutableListOf()
         val normalCoins = if (coins.size >= 3) coins.drop(3) else return emptyList()
 
         // Add coins
-        coinItemStates.addAll(normalCoins.map { coin -> CoinItemState.CryptoCoin(coin) })
+        coinListItems.addAll(normalCoins.map { coin -> CoinListItem.CryptoCoin(coin) })
 
         // Add friend invite
         val coinCount = normalCoins.size + 1 // number of coins = 20
         var friendInvitePosition = 5 // 5
         while (friendInvitePosition <= coinCount) { // 5 <= 20, 10 <= 20, 20 <= 20
-            coinItemStates.add(
+            coinListItems.add(
                 friendInvitePosition - 1,
-                CoinItemState.FriendInvite(
+                CoinListItem.FriendInvite(
                     iconResId = R.drawable.ic_gift,
                     descriptionResId = R.string.item_friend_invite_description,
                     actionResId = R.string.item_friend_invite_action
@@ -136,6 +136,6 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
 
         // Add section headline
 
-        return coinItemStates
+        return coinListItems
     }
 }

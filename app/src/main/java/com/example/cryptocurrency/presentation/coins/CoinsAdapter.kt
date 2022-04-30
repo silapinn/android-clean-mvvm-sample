@@ -20,12 +20,12 @@ import kotlin.properties.Delegates
 
 class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
 
-    var coinItemStates: List<CoinItemState> by Delegates.observable(emptyList()) { _, old, new ->
+    var coinListItems: List<CoinListItem> by Delegates.observable(emptyList()) { _, old, new ->
         notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {
-        return coinItemStates[position].type.ordinal
+        return coinListItems[position].type.ordinal
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoinViewHolder {
@@ -52,16 +52,16 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CoinViewHolder, position: Int) {
-        val itemState = coinItemStates[position]
+        val itemState = coinListItems[position]
         when (holder) {
-            is CoinViewHolder.Title -> holder.bind(itemState as CoinItemState.SectionHeadline)
-            is CoinViewHolder.TopRankCrypto -> holder.bind(itemState as CoinItemState.TopRankCrypto)
-            is CoinViewHolder.Coin -> holder.bind(itemState as CoinItemState.CryptoCoin)
-            is CoinViewHolder.FriendInvite -> holder.bind(itemState as CoinItemState.FriendInvite)
+            is CoinViewHolder.Title -> holder.bind(itemState as CoinListItem.SectionHeadline)
+            is CoinViewHolder.TopRankCrypto -> holder.bind(itemState as CoinListItem.TopRankCrypto)
+            is CoinViewHolder.Coin -> holder.bind(itemState as CoinListItem.CryptoCoin)
+            is CoinViewHolder.FriendInvite -> holder.bind(itemState as CoinListItem.FriendInvite)
         }
     }
 
-    override fun getItemCount() = coinItemStates.size
+    override fun getItemCount() = coinListItems.size
 
     sealed class CoinViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val context: Context
@@ -71,7 +71,7 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
             private val binding: ItemSectionHeadlineBinding
         ) : CoinViewHolder(binding.root) {
 
-            fun bind(headline: CoinItemState.SectionHeadline) {
+            fun bind(headline: CoinListItem.SectionHeadline) {
                 binding.headlineTextView.text = context.getString(headline.textResId)
             }
         }
@@ -88,7 +88,7 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
                 )
             }
 
-            fun bind(topRankCrypto: CoinItemState.TopRankCrypto) {
+            fun bind(topRankCrypto: CoinListItem.TopRankCrypto) {
                 val headline = context.getString(
                     R.string.top_rank_crypto_section_headline,
                     topRankCrypto.coins.size
@@ -113,7 +113,7 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
         class Coin(private val binding: ItemCoinBinding) : CoinViewHolder(binding.root) {
 
             @SuppressLint("SetTextI18n")
-            fun bind(coinItem: CoinItemState.CryptoCoin) = with(coinItem) {
+            fun bind(coinListItem: CoinListItem.CryptoCoin) = with(coinListItem) {
                 binding.nameTextView.text = coin.name
                 binding.symbolTextView.text = coin.symbol
                 binding.priceTextView.text = "$${coin.price}"
@@ -125,7 +125,7 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
             private val binding: ItemFriendInviteBinding
         ) : CoinViewHolder(binding.root) {
 
-            fun bind(friendInvite: CoinItemState.FriendInvite) {
+            fun bind(friendInvite: CoinListItem.FriendInvite) {
                 binding.iconImageView.setImageResource(friendInvite.iconResId)
                 binding.descriptionTextView.text = buildSpannedString {
                     append(context.getString(friendInvite.descriptionResId))
