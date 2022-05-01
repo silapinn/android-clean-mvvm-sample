@@ -9,6 +9,9 @@ import com.example.cryptocurrency.R
 import com.example.cryptocurrency.domain.model.Coin
 import com.example.cryptocurrency.domain.usecase.GetCoinsUseCase
 import com.example.cryptocurrency.domain.usecase.SingleUseCaseResult
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel() {
@@ -17,62 +20,80 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         private const val pageLimit = 20
     }
 
-    private val _coinsViewState: MutableLiveData<CoinsViewState> = MutableLiveData()
+    private val _coinsUiState: MutableLiveData<CoinsUiState> = MutableLiveData(
+        CoinsUiState.Default(
+            listOf(CoinListItem.SectionHeadline(R.string.crypto_section_headline))
+        )
+    )
 
-    private val _coins: MutableLiveData<List<Coin>> = MutableLiveData(emptyList())
+    private val pageToCoins: MutableMap<Int, List<Coin>> = mutableMapOf()
 
-    val coinsViewState: LiveData<CoinsViewState> get() = _coinsViewState
+    val coinsUiState: LiveData<CoinsUiState> get() = _coinsUiState
 
-    private var pageOffset = 0
+    private var currentPage = 0
 
-    fun loadCoins() = viewModelScope.launch {
-        Log.d(this::class.java.name, "get coins")
-        getCoinsUseCase.execute(pageOffset = pageOffset, pageLimit = pageLimit)
+    fun loadCoins(page: Int = 0, forceRefresh: Boolean = false) = viewModelScope.launch {
+        getCoinsUseCase.execute(pageOffset = if (forceRefresh) 0 else page, pageLimit = pageLimit)
+            .onStart {
+                showLoading()
+                if (forceRefresh) currentPage = 0
+                Log.d("CoinsViewModel", "onStart")
+            }
+            .onEach {
+                hideLoading()
+                Log.d("CoinsViewModel", "onEach")
+                currentPage = page
+            }
             .collect { result ->
                 when (result) {
                     is SingleUseCaseResult.Success -> {
-                        val coins = _coins.value?.toMutableList() ?: mutableListOf()
                         val latestCoins = result.data
-                        val fromIndex = pageOffset * pageLimit
-
-                        Log.d("CoinsViewModel", "coin size = ${coins.size}")
-                        Log.d("CoinsViewModel", "fromIndex = $fromIndex")
-                        if (coins.size <= fromIndex) {
-                            coins.addAll(latestCoins)
-                        } else {
-                            latestCoins.forEachIndexed { index, coin ->
-                                val replaceIndex = fromIndex + index
-                                coins[replaceIndex] = coin
-                            }
-                        }
-                        _coins.value = coins
-                        val coinItems = buildCoinItemStates(coins)
-                        _coinsViewState.value = CoinsViewState.Default(coinItems)
+                        pageToCoins[page] = latestCoins
+                        val coins = pageToCoins.values.flatten()
+                        val coinListItems = buildCoinListItems(coins)
+                        _coinsUiState.value =
+                            CoinsUiState.Default(
+                                listItems = coinListItems
+                            )
                     }
                     is SingleUseCaseResult.Failure -> {
                         Log.d("CoinsViewModel", "error")
+                        showErrorAndRetry()
                     }
                 }
             }
     }
 
-    private fun buildCoinItemStates(coins: List<Coin>): List<CoinListItem> {
+    fun retry() {
+        hideErrorAndRetry()
+        loadCoins(currentPage)
+    }
+
+    fun onScrollEnd() {
+        val uiState = _coinsUiState.value
+        if (uiState is CoinsUiState.Default) {
+            val isPaginationLoading =
+                uiState.listItems.lastOrNull() is CoinListItem.PaginationLoading
+            val isError =
+                uiState.listItems.lastOrNull() is CoinListItem.Error
+            if (!isPaginationLoading && !isError) {
+                loadCoins(currentPage + 1)
+            }
+        }
+    }
+
+    private fun buildCoinListItems(coins: List<Coin>): List<CoinListItem> {
         val coinListItems: MutableList<CoinListItem> = mutableListOf()
 
         val topRankCrypto: CoinListItem.TopRankCrypto =
             buildTopRankCrypto(coins) ?: return emptyList()
-        val coinItems: List<CoinListItem> = buildCoinItem(coins)
+        val coinItems: List<CoinListItem> = buildCoinItems(coins)
 
         coinListItems.apply {
             add(topRankCrypto)
             add(CoinListItem.SectionHeadline(R.string.crypto_section_headline))
             addAll(coinItems)
         }
-        // Add top rank crypto
-
-
-        // Add crypto section headline and coins
-
 
         return coinListItems
     }
@@ -88,7 +109,7 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         }
     }
 
-    private fun buildCoinItem(coins: List<Coin>): List<CoinListItem> {
+    private fun buildCoinItems(coins: List<Coin>): List<CoinListItem> {
         val coinListItems: MutableList<CoinListItem> = mutableListOf()
         val normalCoins = if (coins.size >= 3) coins.drop(3) else return emptyList()
 
@@ -134,8 +155,46 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         //                      21 coin
         //                      22 coin
 
-        // Add section headline
-
         return coinListItems
+    }
+
+    private fun showLoading() {
+        val uiState = _coinsUiState.value
+        if (uiState is CoinsUiState.Default) {
+            val listItems = uiState.listItems.toMutableList()
+            listItems.add(CoinListItem.PaginationLoading)
+
+            _coinsUiState.value = CoinsUiState.Default(listItems)
+        }
+    }
+
+    private fun hideLoading() {
+        val uiState = _coinsUiState.value
+        if (uiState is CoinsUiState.Default) {
+            val listItems = uiState.listItems.toMutableList()
+            listItems.remove(CoinListItem.PaginationLoading)
+
+            _coinsUiState.value = CoinsUiState.Default(listItems)
+        }
+    }
+
+    private fun showErrorAndRetry() {
+        val uiState = _coinsUiState.value
+        if (uiState is CoinsUiState.Default) {
+            val listItems = uiState.listItems.toMutableList()
+            listItems.add(CoinListItem.Error)
+
+            _coinsUiState.value = CoinsUiState.Default(listItems)
+        }
+    }
+
+    private fun hideErrorAndRetry() {
+        val uiState = _coinsUiState.value
+        if (uiState is CoinsUiState.Default) {
+            val listItems = uiState.listItems.toMutableList()
+            listItems.remove(CoinListItem.Error)
+
+            _coinsUiState.value = CoinsUiState.Default(listItems)
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.cryptocurrency.di
 
+import com.example.cryptocurrency.common.AuthorizationInterceptor
 import com.example.cryptocurrency.data.network.CoinApi
 import com.example.cryptocurrency.data.repository.datasource.CoinsDataSource
 import com.example.cryptocurrency.data.repository.datasource.CoinsRemoteDataSource
@@ -18,12 +19,17 @@ val networkModule = module {
 
     factory {
         HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.BASIC
         }
     }
 
     factory {
+        AuthorizationInterceptor()
+    }
+
+    factory {
         OkHttpClient.Builder()
+            .addInterceptor(get<AuthorizationInterceptor>())
             .addInterceptor(get<HttpLoggingInterceptor>())
             .connectTimeout(10L, TimeUnit.SECONDS)
             .readTimeout(20L, TimeUnit.SECONDS)

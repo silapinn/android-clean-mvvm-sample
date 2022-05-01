@@ -14,4 +14,5 @@ data class CoinEntity(
     val marketCap: String?,
     val price: String?,
     val change: String?,
+    val rank: Int?
 )

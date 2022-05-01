@@ -23,7 +23,7 @@ class CoinsRepositoryImpl(
         pageOffset,
         pageLimit
     ).map { coinEntities: List<CoinEntity> ->
-        coinEntities.mapNotNull(coinEntityMapper::toCoin)
+        coinEntities.mapIndexedNotNull(coinEntityMapper::toCoin)
     }
 
     override suspend fun getCoinDetails(id: String): CoinDetail {

@@ -4,6 +4,7 @@ import com.example.cryptocurrency.data.Response
 import com.example.cryptocurrency.data.entity.CoinEntity
 import com.example.cryptocurrency.data.entity.CryptoEntity
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.Query
 

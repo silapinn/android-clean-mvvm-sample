@@ -18,6 +18,10 @@ sealed class CoinListItem(val type: CoinItemType) {
         val descriptionResId: Int,
         val actionResId: Int
     ) : CoinListItem(CoinItemType.FRIEND_INVITE)
+
+    object PaginationLoading : CoinListItem(CoinItemType.LOADING)
+
+    object Error : CoinListItem(CoinItemType.ERROR)
 }
 
 enum class CoinItemType {
@@ -25,4 +29,6 @@ enum class CoinItemType {
     SECTION_HEADLINE,
     COIN,
     FRIEND_INVITE,
+    LOADING,
+    ERROR
 }

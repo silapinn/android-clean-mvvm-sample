@@ -6,5 +6,6 @@ data class Coin(
     val symbol: String,
     val price: Double,
     val change: Double,
+    val rank: Int,
     val iconUrl: String?,
 )

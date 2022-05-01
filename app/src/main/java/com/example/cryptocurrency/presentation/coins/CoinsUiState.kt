@@ -1,17 +1,17 @@
 package com.example.cryptocurrency.presentation.coins
 
-sealed class CoinsViewState {
+sealed class CoinsUiState {
 
     data class Default(
         val listItems: List<CoinListItem>
-    ) : CoinsViewState()
+    ) : CoinsUiState()
 
     data class Searching(
         val keyword: String,
         val coinLists: List<CoinListItem>
-    ) : CoinsViewState()
+    ) : CoinsUiState()
 
-    object Loading : CoinsViewState()
+    object Loading : CoinsUiState()
 
-    object Empty : CoinsViewState()
+    object Empty : CoinsUiState()
 }

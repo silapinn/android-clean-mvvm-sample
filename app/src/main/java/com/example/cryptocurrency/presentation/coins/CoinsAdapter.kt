@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.buildSpannedString
 import androidx.core.text.inSpans
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cryptocurrency.R
@@ -18,14 +20,13 @@ import com.example.cryptocurrency.presentation.coins.toprank.TopRankCoinsAdapter
 import java.lang.IllegalStateException
 import kotlin.properties.Delegates
 
-class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
+class CoinsAdapter(private val retryCallback: () -> Unit) :
+    RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
 
-    var coinListItems: List<CoinListItem> by Delegates.observable(emptyList()) { _, old, new ->
-        notifyDataSetChanged()
-    }
+    private val differ: AsyncListDiffer<CoinListItem> = AsyncListDiffer(this, diffItemCallback)
 
     override fun getItemViewType(position: Int): Int {
-        return coinListItems[position].type.ordinal
+        return differ.currentList[position].type.ordinal
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoinViewHolder {
@@ -47,21 +48,39 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
                 val binding = ItemFriendInviteBinding.inflate(layoutInflater, parent, false)
                 return CoinViewHolder.FriendInvite(binding)
             }
+            CoinItemType.LOADING.ordinal -> {
+                val binding = ItemPaginationLoadingBinding.inflate(layoutInflater, parent, false)
+                return CoinViewHolder.PaginationLoading(binding)
+            }
+            CoinItemType.ERROR.ordinal -> {
+                val binding = ItemErrorBinding.inflate(layoutInflater, parent, false)
+                return CoinViewHolder.Error(binding, retryCallback)
+            }
             else -> throw IllegalStateException("Unknown view type")
         }
     }
 
     override fun onBindViewHolder(holder: CoinViewHolder, position: Int) {
-        val itemState = coinListItems[position]
+        val itemState = differ.currentList[position]
         when (holder) {
             is CoinViewHolder.Title -> holder.bind(itemState as CoinListItem.SectionHeadline)
             is CoinViewHolder.TopRankCrypto -> holder.bind(itemState as CoinListItem.TopRankCrypto)
             is CoinViewHolder.Coin -> holder.bind(itemState as CoinListItem.CryptoCoin)
             is CoinViewHolder.FriendInvite -> holder.bind(itemState as CoinListItem.FriendInvite)
+            is CoinViewHolder.PaginationLoading -> {
+                // do nothing
+            }
+            is CoinViewHolder.Error -> {
+                // do nothing
+            }
         }
     }
 
-    override fun getItemCount() = coinListItems.size
+    override fun getItemCount() = differ.currentList.size
+
+    fun submitList(coinListItems: List<CoinListItem>) {
+        differ.submitList(coinListItems)
+    }
 
     sealed class CoinViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val context: Context
@@ -80,7 +99,7 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
             private val binding: ItemTopRankCryptoBinding
         ) : CoinViewHolder(binding.root) {
 
-            val itemDecoration: HorizontalSpaceItemDecoration by lazy {
+            private val itemDecoration: HorizontalSpaceItemDecoration by lazy {
                 HorizontalSpaceItemDecoration(
                     context.resources.getDimensionPixelOffset(
                         R.dimen.item_top_rank_coin_horizontal_space
@@ -136,5 +155,40 @@ class CoinsAdapter : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
                 }
             }
         }
+
+        class PaginationLoading(
+            binding: ItemPaginationLoadingBinding
+        ) : CoinViewHolder(binding.root)
+
+        class Error(
+            binding: ItemErrorBinding,
+            private val retryCallback: () -> Unit
+        ) : CoinViewHolder(binding.root) {
+
+            init {
+                binding.errorActionTextView.setOnClickListener {
+                    retryCallback.invoke()
+                }
+            }
+        }
+    }
+
+    class CoinsDiffItemCallback : DiffUtil.ItemCallback<CoinListItem>() {
+
+        override fun areItemsTheSame(oldItem: CoinListItem, newItem: CoinListItem): Boolean {
+            return if (oldItem is CoinListItem.CryptoCoin && newItem is CoinListItem.CryptoCoin) {
+                oldItem.coin.id == newItem.coin.id
+            } else {
+                oldItem == newItem
+            }
+        }
+
+        override fun areContentsTheSame(oldItem: CoinListItem, newItem: CoinListItem): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    companion object {
+        private val diffItemCallback = CoinsDiffItemCallback()
     }
 }

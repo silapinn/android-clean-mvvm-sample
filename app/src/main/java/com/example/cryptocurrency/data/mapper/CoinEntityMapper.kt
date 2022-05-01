@@ -6,12 +6,13 @@ import com.example.cryptocurrency.domain.model.CoinDetail
 
 class CoinEntityMapper {
 
-    fun toCoin(coinEntity: CoinEntity): Coin? {
+    fun toCoin(index: Int, coinEntity: CoinEntity): Coin? {
         val id: String = coinEntity.id ?: return null
         val name: String = coinEntity.name ?: ""
         val symbol: String = coinEntity.symbol ?: ""
         val price: Double = coinEntity.price?.toDouble() ?: 0.0
         val change: Double = coinEntity.change?.toDouble() ?: 0.0
+        val rank: Int = coinEntity.rank ?: index + 1
         val iconUrl: String? = coinEntity.iconUrl
 
         return Coin(
@@ -20,6 +21,7 @@ class CoinEntityMapper {
             symbol = symbol,
             price = price,
             change = change,
+            rank = rank,
             iconUrl = iconUrl
         )
     }

@@ -18,15 +18,15 @@ class GetCoinsUseCaseImpl(private val coinsRepository: CoinsRepository) : GetCoi
         searchKeyword: String?,
         pageOffset: Int?,
         pageLimit: Int?
-    ): Flow<SingleUseCaseResult<List<Coin>>> = flow {
+    ): Flow<SingleUseCaseResult<List<Coin>>> = channelFlow {
         try {
             coinsRepository
                 .getLatestCoins(searchKeyword, pageOffset, pageLimit)
                 .collect { coins ->
-                    emit(SingleUseCaseResult.Success(coins))
+                    send(SingleUseCaseResult.Success(coins))
                 }
         } catch (t: Throwable) {
-            emit(SingleUseCaseResult.Failure.GenericError(t))
+            send(SingleUseCaseResult.Failure.GenericError(t))
         }
     }
 }

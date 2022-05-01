@@ -1,7 +1,6 @@
 package com.example.cryptocurrency.presentation.coins
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,16 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cryptocurrency.R
 import com.example.cryptocurrency.common.HorizontalMarginMultiItemDecoration
+import com.example.cryptocurrency.common.ScrollEndListener
 import com.example.cryptocurrency.common.VerticalSpaceMultiItemDecoration
 import com.example.cryptocurrency.databinding.FragmentCoinsBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CoinsFragment : Fragment() {
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = CoinsFragment()
-    }
 
     private val viewModel: CoinsViewModel by viewModel()
 
@@ -27,7 +22,11 @@ class CoinsFragment : Fragment() {
     }
 
     private val coinsAdapter: CoinsAdapter by lazy {
-        CoinsAdapter()
+        CoinsAdapter(viewModel::retry)
+    }
+
+    private val scrollEndListener: ScrollEndListener by lazy {
+        ScrollEndListener(viewModel::onScrollEnd)
     }
 
     override fun onCreateView(
@@ -84,26 +83,34 @@ class CoinsFragment : Fragment() {
                     )
                 )
             )
+            addOnScrollListener(scrollEndListener)
         }
     }
 
     private fun subscribeToViewModel() {
-        viewModel.coinsViewState.observe(viewLifecycleOwner) { viewState ->
+        viewModel.coinsUiState.observe(viewLifecycleOwner) { viewState ->
             when (viewState) {
-                is CoinsViewState.Default -> {
-                    coinsAdapter.coinListItems = viewState.listItems
-                    Log.d("CoinsFragment", "${coinsAdapter.coinListItems.size}")
+                is CoinsUiState.Default -> {
+                    binding.coinsRecyclerView.post {
+                        coinsAdapter.submitList(viewState.listItems)
+//                        Log.d("CoinsFragment", "${coinsAdapter.coinListItems.size}")
+                    }
                 }
-                is CoinsViewState.Searching -> {
+                is CoinsUiState.Searching -> {
 
                 }
-                is CoinsViewState.Loading -> {
+                is CoinsUiState.Loading -> {
 
                 }
-                is CoinsViewState.Empty -> {
+                is CoinsUiState.Empty -> {
 
                 }
             }
         }
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = CoinsFragment()
     }
 }

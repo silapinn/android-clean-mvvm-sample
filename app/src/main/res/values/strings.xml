@@ -5,4 +5,6 @@
     <string name="crypto_section_headline">Buy, sell and hold crypto</string>
     <string name="item_friend_invite_description">You can earn $10  when you invite a friend to buy crypto.</string>
     <string name="item_friend_invite_action">Invite your friend</string>
+    <string name="item_error_description">Could not load data</string>
+    <string name="item_error_action">Try again</string>
 </resources>
