@@ -3,6 +3,9 @@ package com.example.cryptocurrency.presentation.coins.toprank
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.load
 import com.example.cryptocurrency.databinding.ItemTopRankCoinBinding
 import com.example.cryptocurrency.domain.model.Coin
 
@@ -31,6 +34,12 @@ class TopRankCoinsAdapter(
             binding.symbolTextView.text = coin.symbol
             binding.nameTextView.text = coin.name
             binding.changeTextView.change = coin.change
+            val imageLoader = ImageLoader.Builder(itemView.context)
+                .components {
+                    add(SvgDecoder.Factory())
+                }
+                .build()
+            binding.iconImageView.load(coin.iconUrl, imageLoader)
         }
     }
 }

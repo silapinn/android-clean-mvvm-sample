@@ -13,12 +13,14 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.load
 import com.example.cryptocurrency.R
 import com.example.cryptocurrency.common.HorizontalSpaceItemDecoration
 import com.example.cryptocurrency.databinding.*
 import com.example.cryptocurrency.presentation.coins.toprank.TopRankCoinsAdapter
-import java.lang.IllegalStateException
-import kotlin.properties.Delegates
+
 
 class CoinsAdapter(private val retryCallback: () -> Unit) :
     RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
@@ -137,6 +139,13 @@ class CoinsAdapter(private val retryCallback: () -> Unit) :
                 binding.symbolTextView.text = coin.symbol
                 binding.priceTextView.text = "$${coin.price}"
                 binding.changeTextView.change = coin.change
+                val imageLoader = ImageLoader.Builder(context)
+                    .components {
+                        add(SvgDecoder.Factory())
+                    }
+                    .build()
+                binding.iconImageView.load(coin.iconUrl, imageLoader)
+
             }
         }
 
