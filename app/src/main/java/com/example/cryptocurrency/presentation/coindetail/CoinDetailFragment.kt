@@ -62,7 +62,7 @@ class CoinDetailFragment : BottomSheetDialogFragment() {
                 text = coinDetail.name
             }
             binding.symbolTextView.text = getString(R.string.coin_detail_symbol, coinDetail.symbol)
-            binding.priceTextView.text = getString(R.string.coin_formatted_price, coinDetail.price)
+            binding.priceTextView.text = getString(R.string.coin_detail_formatted_price, coinDetail.price)
             binding.marketCapTextView.text = coinDetail.marketCap.toString()
             binding.detailTextView.apply {
                 movementMethod = ScrollingMovementMethod()

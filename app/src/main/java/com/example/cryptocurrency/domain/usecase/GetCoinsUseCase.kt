@@ -1,5 +1,7 @@
 package com.example.cryptocurrency.domain.usecase
 
+import com.example.cryptocurrency.common.error.GenericError
+import com.example.cryptocurrency.common.error.ServerError
 import com.example.cryptocurrency.domain.model.Coin
 import com.example.cryptocurrency.domain.repository.CoinsRepository
 import kotlinx.coroutines.flow.*
@@ -25,8 +27,30 @@ class GetCoinsUseCaseImpl(private val coinsRepository: CoinsRepository) : GetCoi
                 .collect { coins ->
                     send(SingleUseCaseResult.Success(coins))
                 }
+        } catch (e: ServerError) {
+            send(
+                SingleUseCaseResult.Failure(
+                    code = e.code,
+                    message = e.message,
+                    details = e.details
+                )
+            )
+        } catch (e: GenericError) {
+            send(
+                SingleUseCaseResult.Failure(
+                    code = null,
+                    message = e.message,
+                    details = e.details
+                )
+            )
         } catch (t: Throwable) {
-            send(SingleUseCaseResult.Failure.GenericError(t))
+            send(
+                SingleUseCaseResult.Failure(
+                    code = null,
+                    message = t.message,
+                    details = t.toString()
+                )
+            )
         }
     }
 }

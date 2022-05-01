@@ -2,13 +2,16 @@
     <string name="app_name">Cryptocurrency</string>
     <string name="top_rank_crypto_section_headline">Top %d rank crypto</string>
     <string name="crypto_section_headline">Buy, sell and hold crypto</string>
+
+    <string name="item_coin_price_formatted_price">$%.5f</string>
     <string name="item_friend_invite_description">You can earn $10  when you invite a friend to buy crypto.</string>
     <string name="item_friend_invite_action">Invite your friend</string>
     <string name="item_error_description">Could not load data</string>
     <string name="item_error_action">Try again</string>
+
     <string name="coin_detail_price_label">PRICE</string>
     <string name="coin_detail_market_cap_label">MARKET CAP</string>
     <string name="coin_detail_open_website">GO TO WEBSITE</string>
     <string name="coin_detail_symbol">(%s)</string>
-    <string name="coin_formatted_price">$%.2f</string>
+    <string name="coin_detail_formatted_price">$%.2f</string>
 </resources>

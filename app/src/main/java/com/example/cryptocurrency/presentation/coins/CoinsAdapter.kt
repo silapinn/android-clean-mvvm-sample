@@ -144,7 +144,7 @@ class CoinsAdapter(
                 binding.nameTextView.text = coin.name
                 binding.symbolTextView.text = coin.symbol
                 binding.priceTextView.text =
-                    context.getString(R.string.coin_formatted_price, coin.price)
+                    context.getString(R.string.item_coin_price_formatted_price, coin.price)
                 binding.changeTextView.change = coin.change
                 val imageLoader = ImageLoader.Builder(context)
                     .components {

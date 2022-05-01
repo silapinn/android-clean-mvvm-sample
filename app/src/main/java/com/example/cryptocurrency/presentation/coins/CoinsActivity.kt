@@ -20,8 +20,6 @@ class CoinsActivity : ScopeActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        Log.d("CoinsActivity", "support fragment")
-
         supportFragmentManager.commit {
             replace<CoinsFragment>(binding.root.id)
         }

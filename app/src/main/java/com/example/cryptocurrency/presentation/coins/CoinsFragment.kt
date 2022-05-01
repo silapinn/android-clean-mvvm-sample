@@ -100,6 +100,10 @@ class CoinsFragment : Fragment() {
             )
             addOnScrollListener(scrollEndListener)
         }
+
+        binding.refreshLayout.setOnRefreshListener {
+            viewModel.loadCoins(forceRefresh = true)
+        }
     }
 
     private fun subscribeToViewModel() {
@@ -111,15 +115,19 @@ class CoinsFragment : Fragment() {
                     }
                 }
                 is CoinsUiState.Searching -> {
-
+                    // Don't have enough time
                 }
                 is CoinsUiState.Loading -> {
-
+                    // Don't have enough time
                 }
                 is CoinsUiState.Empty -> {
-
+                    // Don't have enough time
                 }
             }
+        }
+
+        viewModel.isRefreshLoading.observe(viewLifecycleOwner) { isRefreshLoading ->
+            binding.refreshLayout.isRefreshing = isRefreshLoading
         }
 
         viewModel.showCoinDetail.observe(viewLifecycleOwner) { id ->

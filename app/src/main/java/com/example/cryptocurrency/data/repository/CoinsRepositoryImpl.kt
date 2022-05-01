@@ -8,23 +8,30 @@ import com.example.cryptocurrency.domain.model.Coin
 import com.example.cryptocurrency.domain.model.CoinDetail
 import com.example.cryptocurrency.domain.repository.CoinsRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class CoinsRepositoryImpl(
     private val coinsRemoteDataSource: CoinsRemoteDataSource,
     private val coinEntityMapper: CoinEntityMapper
-) : CoinsRepository {
+) : BaseRepository(), CoinsRepository {
 
     override suspend fun getLatestCoins(
         searchKeyword: String?,
         pageOffset: Int?,
         pageLimit: Int?
-    ): Flow<List<Coin>> = coinsRemoteDataSource.getLatestCoins(
-        searchKeyword,
-        pageOffset,
-        pageLimit
-    ).map { coinEntities: List<CoinEntity> ->
-        coinEntities.mapIndexedNotNull(coinEntityMapper::toCoin)
+    ): Flow<List<Coin>> = flow {
+        handleNetwork {
+            coinsRemoteDataSource.getLatestCoins(
+                searchKeyword,
+                pageOffset,
+                pageLimit
+            ).map { coinEntities: List<CoinEntity> ->
+                coinEntities.mapIndexedNotNull(coinEntityMapper::toCoin)
+            }.collect {
+                emit(it)
+            }
+        }
     }
 
     override suspend fun getCoinDetails(id: String): CoinDetail {

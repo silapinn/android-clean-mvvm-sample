@@ -10,6 +10,10 @@ import com.example.cryptocurrency.R
 import com.example.cryptocurrency.domain.model.Coin
 import com.example.cryptocurrency.domain.usecase.GetCoinsUseCase
 import com.example.cryptocurrency.domain.usecase.SingleUseCaseResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -27,46 +31,73 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         )
     )
 
+    private val _isRefreshLoading: MutableLiveData<Boolean> = MutableLiveData()
+
     private val _showCoinDetail: SingleLiveEvent<String> = SingleLiveEvent()
 
     private val pageToCoins: MutableMap<Int, List<Coin>> = mutableMapOf()
 
+    private val jobs: MutableList<Job> = mutableListOf()
+
     val coinsUiState: LiveData<CoinsUiState> get() = _coinsUiState
+
+    val isRefreshLoading: LiveData<Boolean> = _isRefreshLoading
 
     val showCoinDetail: LiveData<String> get() = _showCoinDetail
 
     private var currentPage = 0
 
-    fun loadCoins(page: Int = 0, forceRefresh: Boolean = false) = viewModelScope.launch {
-        getCoinsUseCase.execute(pageOffset = if (forceRefresh) 0 else page, pageLimit = pageLimit)
-            .onStart {
-                showLoading()
-                if (forceRefresh) currentPage = 0
-                Log.d("CoinsViewModel", "onStart")
+    fun loadCoins(page: Int = 0, forceRefresh: Boolean = false) {
+        if (forceRefresh) {
+            _isRefreshLoading.value = true
+            jobs.forEach { job ->
+                job.cancel()
             }
-            .onEach {
-                hideLoading()
-                Log.d("CoinsViewModel", "onEach")
-                currentPage = page
-            }
-            .collect { result ->
-                when (result) {
-                    is SingleUseCaseResult.Success -> {
-                        val latestCoins = result.data
-                        pageToCoins[page] = latestCoins
-                        val coins = pageToCoins.values.flatten()
-                        val coinListItems = buildCoinListItems(coins)
-                        _coinsUiState.value =
-                            CoinsUiState.Default(
-                                listItems = coinListItems
-                            )
+        }
+        viewModelScope.launch {
+            getCoinsUseCase.execute(
+                pageOffset = if (forceRefresh) 0 else page,
+                pageLimit = pageLimit
+            )
+                .onStart {
+                    showLoading()
+                    currentPage = if (forceRefresh) 0 else page
+                    Log.d("CoinsViewModel", "onStart page = $currentPage")
+                }
+                .onEach {
+                    hideLoading()
+                    Log.d("CoinsViewModel", "onEach")
+                }
+                .cancellable()
+                .collect { result ->
+                    if (_isRefreshLoading.value == true) {
+                        _isRefreshLoading.value = false
+                        clearCoinItems()
                     }
-                    is SingleUseCaseResult.Failure -> {
-                        Log.d("CoinsViewModel", "error")
-                        showErrorAndRetry()
+                    when (result) {
+                        is SingleUseCaseResult.Success -> {
+                            val latestCoins = result.data
+                            pageToCoins[page] = latestCoins
+                            val coins = pageToCoins.values.flatten()
+                            val coinListItems = buildCoinListItems(coins)
+                            _coinsUiState.value =
+                                CoinsUiState.Default(
+                                    listItems = coinListItems
+                                )
+                        }
+                        is SingleUseCaseResult.Failure -> {
+                            Log.d("CoinsViewModel", "code = ${result.code}")
+                            Log.d("CoinsViewModel", "message = ${result.message}")
+                            Log.d("CoinsViewModel", "details = ${result.details}")
+                            if (pageToCoins[page] == null) {
+                                showErrorAndRetry()
+                            }
+                        }
                     }
                 }
-            }
+        }.also { job ->
+            jobs.add(job)
+        }
     }
 
     fun retry() {
@@ -167,6 +198,16 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         return coinListItems
     }
 
+    private fun clearCoinItems() {
+        pageToCoins.clear()
+        _coinsUiState.value = CoinsUiState.Default(
+            listOf()
+        )
+        _coinsUiState.value = CoinsUiState.Default(
+            listOf(CoinListItem.SectionHeadline(R.string.crypto_section_headline))
+        )
+    }
+
     private fun showLoading() {
         val uiState = _coinsUiState.value
         if (uiState is CoinsUiState.Default) {
@@ -191,6 +232,7 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         val uiState = _coinsUiState.value
         if (uiState is CoinsUiState.Default) {
             val listItems = uiState.listItems.toMutableList()
+            listItems.remove(CoinListItem.Error)
             listItems.add(CoinListItem.Error)
 
             _coinsUiState.value = CoinsUiState.Default(listItems)
