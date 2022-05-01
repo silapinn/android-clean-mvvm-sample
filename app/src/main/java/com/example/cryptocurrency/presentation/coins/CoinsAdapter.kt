@@ -3,10 +3,13 @@ package com.example.cryptocurrency.presentation.coins
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.text.inSpans
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -21,9 +24,10 @@ import com.example.cryptocurrency.common.HorizontalSpaceItemDecoration
 import com.example.cryptocurrency.databinding.*
 import com.example.cryptocurrency.presentation.coins.toprank.TopRankCoinsAdapter
 
-
-class CoinsAdapter(private val retryCallback: () -> Unit) :
-    RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
+class CoinsAdapter(
+    private val coinClickCallback: (String) -> Unit,
+    private val retryCallback: () -> Unit
+) : RecyclerView.Adapter<CoinsAdapter.CoinViewHolder>() {
 
     private val differ: AsyncListDiffer<CoinListItem> = AsyncListDiffer(this, diffItemCallback)
 
@@ -44,7 +48,7 @@ class CoinsAdapter(private val retryCallback: () -> Unit) :
             }
             CoinItemType.COIN.ordinal -> {
                 val binding = ItemCoinBinding.inflate(layoutInflater, parent, false)
-                return CoinViewHolder.Coin(binding)
+                return CoinViewHolder.Coin(binding, coinClickCallback)
             }
             CoinItemType.FRIEND_INVITE.ordinal -> {
                 val binding = ItemFriendInviteBinding.inflate(layoutInflater, parent, false)
@@ -131,13 +135,17 @@ class CoinsAdapter(private val retryCallback: () -> Unit) :
             }
         }
 
-        class Coin(private val binding: ItemCoinBinding) : CoinViewHolder(binding.root) {
+        class Coin(
+            private val binding: ItemCoinBinding,
+            private val onCoinClick: (String) -> Unit,
+        ) : CoinViewHolder(binding.root) {
 
             @SuppressLint("SetTextI18n")
             fun bind(coinListItem: CoinListItem.CryptoCoin) = with(coinListItem) {
                 binding.nameTextView.text = coin.name
                 binding.symbolTextView.text = coin.symbol
-                binding.priceTextView.text = "$${coin.price}"
+                binding.priceTextView.text =
+                    context.getString(R.string.coin_formatted_price, coin.price)
                 binding.changeTextView.change = coin.change
                 val imageLoader = ImageLoader.Builder(context)
                     .components {
@@ -146,6 +154,9 @@ class CoinsAdapter(private val retryCallback: () -> Unit) :
                     .build()
                 binding.iconImageView.load(coin.iconUrl, imageLoader)
 
+                binding.root.setOnClickListener {
+                    onCoinClick.invoke(coin.id)
+                }
             }
         }
 
@@ -158,7 +169,12 @@ class CoinsAdapter(private val retryCallback: () -> Unit) :
                 binding.descriptionTextView.text = buildSpannedString {
                     append(context.getString(friendInvite.descriptionResId))
                     append(" ")
-                    inSpans(ForegroundColorSpan(Color.BLUE)) {
+                    inSpans(
+                        ForegroundColorSpan(ContextCompat.getColor(context, R.color.blue)),
+                        StyleSpan(
+                            Typeface.BOLD
+                        )
+                    ) {
                         append(context.getString(friendInvite.actionResId))
                     }
                 }

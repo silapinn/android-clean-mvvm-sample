@@ -33,6 +33,7 @@ class CoinEntityMapper {
         val price: Double = coinEntity.price?.toDouble() ?: 0.0
         val change: Double = coinEntity.change?.toDouble() ?: 0.0
         val marketCap: Double = coinEntity.marketCap?.toDouble() ?: 0.0
+        val description: String = coinEntity.description ?: ""
         val color: String? = coinEntity.color
         val iconUrl: String? = coinEntity.iconUrl
         val websiteUrl: String? = coinEntity.websiteUrl
@@ -45,6 +46,7 @@ class CoinEntityMapper {
             price = price,
             change = change,
             marketCap = marketCap,
+            description = description,
             iconUrl = iconUrl,
             websiteUrl = websiteUrl
         )

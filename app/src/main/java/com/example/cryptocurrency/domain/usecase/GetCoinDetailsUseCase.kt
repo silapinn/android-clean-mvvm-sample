@@ -4,12 +4,17 @@ import com.example.cryptocurrency.domain.model.CoinDetail
 import com.example.cryptocurrency.domain.repository.CoinsRepository
 
 interface GetCoinDetailsUseCase {
-    fun execute(id: String): SingleUseCaseResult<CoinDetail>
+    suspend fun execute(id: String): SingleUseCaseResult<CoinDetail>
 }
 
 class GetCoinDetailsUseCaseImpl(private val coinsRepository: CoinsRepository) :
     GetCoinDetailsUseCase {
-    override fun execute(id: String): SingleUseCaseResult<CoinDetail> {
-        TODO("Not yet implemented")
+    override suspend fun execute(id: String): SingleUseCaseResult<CoinDetail> {
+        return try {
+            val coinDetail = coinsRepository.getCoinDetails(id)
+            SingleUseCaseResult.Success(coinDetail)
+        } catch (t: Throwable) {
+            SingleUseCaseResult.Failure.GenericError(t)
+        }
     }
 }

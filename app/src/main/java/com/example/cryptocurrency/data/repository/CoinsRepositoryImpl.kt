@@ -1,5 +1,6 @@
 package com.example.cryptocurrency.data.repository
 
+import android.util.Log
 import com.example.cryptocurrency.data.entity.CoinEntity
 import com.example.cryptocurrency.data.mapper.CoinEntityMapper
 import com.example.cryptocurrency.data.repository.datasource.CoinsRemoteDataSource
@@ -28,8 +29,9 @@ class CoinsRepositoryImpl(
 
     override suspend fun getCoinDetails(id: String): CoinDetail {
         val coinEntity: CoinEntity = coinsRemoteDataSource.getCoinDetails(id)
+        Log.d("CoinsRepositoryImpl", coinEntity.toString())
         val coinDetail = coinEntityMapper.toCoinDetail(coinEntity)
-        // TODO: throw exception and handle properly
+        Log.d("CoinsRepositoryImpl", coinDetail.toString())
         return coinDetail!!
     }
 }

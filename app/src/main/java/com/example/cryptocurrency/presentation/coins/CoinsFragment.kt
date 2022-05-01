@@ -1,19 +1,19 @@
 package com.example.cryptocurrency.presentation.coins
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cryptocurrency.R
 import com.example.cryptocurrency.common.HorizontalMarginMultiItemDecoration
 import com.example.cryptocurrency.common.ScrollEndListener
 import com.example.cryptocurrency.common.VerticalSpaceMultiItemDecoration
 import com.example.cryptocurrency.databinding.FragmentCoinsBinding
+import com.example.cryptocurrency.presentation.coindetail.CoinDetailFragment
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CoinsFragment : Fragment() {
@@ -25,7 +25,7 @@ class CoinsFragment : Fragment() {
     }
 
     private val coinsAdapter: CoinsAdapter by lazy {
-        CoinsAdapter(viewModel::retry)
+        CoinsAdapter(viewModel::onCoinClick, viewModel::retry)
     }
 
     private val scrollEndListener: ScrollEndListener by lazy {
@@ -110,7 +110,6 @@ class CoinsFragment : Fragment() {
                 is CoinsUiState.Default -> {
                     binding.coinsRecyclerView.post {
                         coinsAdapter.submitList(viewState.listItems)
-//                        Log.d("CoinsFragment", "${coinsAdapter.coinListItems.size}")
                     }
                 }
                 is CoinsUiState.Searching -> {
@@ -123,6 +122,11 @@ class CoinsFragment : Fragment() {
 
                 }
             }
+        }
+
+        viewModel.showCoinDetail.observe(viewLifecycleOwner) { id ->
+            val coinDetailFragment = CoinDetailFragment.newInstance(id)
+            coinDetailFragment.show(childFragmentManager, null)
         }
     }
 

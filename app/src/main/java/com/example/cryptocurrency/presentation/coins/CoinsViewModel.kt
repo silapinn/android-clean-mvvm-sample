@@ -1,5 +1,6 @@
 package com.example.cryptocurrency.presentation.coins
 
+import SingleLiveEvent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,9 +27,13 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
         )
     )
 
+    private val _showCoinDetail: SingleLiveEvent<String> = SingleLiveEvent()
+
     private val pageToCoins: MutableMap<Int, List<Coin>> = mutableMapOf()
 
     val coinsUiState: LiveData<CoinsUiState> get() = _coinsUiState
+
+    val showCoinDetail: LiveData<String> get() = _showCoinDetail
 
     private var currentPage = 0
 
@@ -67,6 +72,10 @@ class CoinsViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel()
     fun retry() {
         hideErrorAndRetry()
         loadCoins(currentPage)
+    }
+
+    fun onCoinClick(id: String) {
+        _showCoinDetail.value = id
     }
 
     fun onScrollEnd() {
