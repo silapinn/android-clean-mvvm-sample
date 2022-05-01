@@ -19,7 +19,7 @@ class CoinsRemoteDataSource(private val coinApi: CoinApi) : CoinsDataSource {
         pageOffset: Int?,
         pageLimit: Int?
     ): Flow<List<CoinEntity>> = flow {
-//        do {
+        do {
             val response: Response<CryptoResponseData> = coinApi.getCoins(
                 searchKeyword,
                 pageOffset,
@@ -28,7 +28,7 @@ class CoinsRemoteDataSource(private val coinApi: CoinApi) : CoinsDataSource {
             val coins: List<CoinEntity> = response.data.coins
             emit(coins)
             delay(REFRESH_INTERVAL)
-//        } while (true)
+        } while (true)
     }
 
     override suspend fun getCoinDetails(id: String): CoinEntity {

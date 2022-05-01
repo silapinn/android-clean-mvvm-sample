@@ -2,7 +2,6 @@ package com.example.cryptocurrency.presentation.coins
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
@@ -20,7 +19,7 @@ import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.load
 import com.example.cryptocurrency.R
-import com.example.cryptocurrency.common.HorizontalSpaceItemDecoration
+import com.example.cryptocurrency.common.widget.decoration.HorizontalSpaceItemDecoration
 import com.example.cryptocurrency.databinding.*
 import com.example.cryptocurrency.presentation.coins.toprank.TopRankCoinsAdapter
 

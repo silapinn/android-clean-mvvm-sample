@@ -1,4 +1,4 @@
-package com.example.cryptocurrency.common
+package com.example.cryptocurrency.common.widget.decoration
 
 import android.graphics.Rect
 import android.view.View
