@@ -1,10 +1,13 @@
 package com.example.cryptocurrency.presentation.coins
 
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cryptocurrency.R
 import com.example.cryptocurrency.common.HorizontalMarginMultiItemDecoration
@@ -47,7 +50,21 @@ class CoinsFragment : Fragment() {
 
     private fun initView() {
         binding.coinsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
+            (layoutManager as? GridLayoutManager)?.spanSizeLookup =
+                object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return when (coinsAdapter.getItemViewType(position)) {
+                            CoinItemType.TOP_RANK_CRYPTO.ordinal,
+                            CoinItemType.SECTION_HEADLINE.ordinal,
+                            CoinItemType.LOADING.ordinal,
+                            CoinItemType.ERROR.ordinal -> 3
+                            CoinItemType.COIN.ordinal,
+                            CoinItemType.FRIEND_INVITE.ordinal -> 1
+                            else -> 3
+                        }
+                    }
+                }
+
             adapter = coinsAdapter
             addItemDecoration(
                 VerticalSpaceMultiItemDecoration(
