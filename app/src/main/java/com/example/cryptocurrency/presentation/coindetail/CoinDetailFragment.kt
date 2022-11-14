@@ -21,7 +21,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-
 class CoinDetailFragment : BottomSheetDialogFragment() {
 
     private val viewModel: CoinDetailViewModel by viewModel {
@@ -36,11 +35,12 @@ class CoinDetailFragment : BottomSheetDialogFragment() {
     }
 
     override fun getTheme(): Int {
-        return R.style.CustomBottomSheetDialog;
+        return R.style.CustomBottomSheetDialog
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return binding.root
@@ -72,11 +72,14 @@ class CoinDetailFragment : BottomSheetDialogFragment() {
                     Html.fromHtml(coinDetail.description)
                 }
             }
-            binding.iconImageView.load(coinDetail.iconUrl, ImageLoader.Builder(requireContext())
-                .components {
-                    add(SvgDecoder.Factory())
-                }
-                .build())
+            binding.iconImageView.load(
+                coinDetail.iconUrl,
+                ImageLoader.Builder(requireContext())
+                    .components {
+                        add(SvgDecoder.Factory())
+                    }
+                    .build()
+            )
             binding.openWebsiteTextView.setOnClickListener {
                 if (coinDetail.websiteUrl != null) {
                     val browserIntent =

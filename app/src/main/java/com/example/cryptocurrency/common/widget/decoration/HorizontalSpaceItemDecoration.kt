@@ -15,5 +15,4 @@ class HorizontalSpaceItemDecoration(private val horizontalSpace: Int) :
     ) {
         outRect.right = horizontalSpace
     }
-
 }

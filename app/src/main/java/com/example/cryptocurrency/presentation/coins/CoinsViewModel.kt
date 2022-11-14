@@ -10,11 +10,9 @@ import com.example.cryptocurrency.R
 import com.example.cryptocurrency.domain.model.Coin
 import com.example.cryptocurrency.domain.usecase.GetCoinsUseCase
 import com.example.cryptocurrency.domain.usecase.SingleUseCaseResult
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch

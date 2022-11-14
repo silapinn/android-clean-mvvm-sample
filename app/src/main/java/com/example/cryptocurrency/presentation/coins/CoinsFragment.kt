@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.cryptocurrency.R
-import com.example.cryptocurrency.common.widget.decoration.HorizontalMarginMultiItemDecoration
 import com.example.cryptocurrency.common.ScrollEndListener
+import com.example.cryptocurrency.common.widget.decoration.HorizontalMarginMultiItemDecoration
 import com.example.cryptocurrency.common.widget.decoration.VerticalSpaceMultiItemDecoration
 import com.example.cryptocurrency.databinding.FragmentCoinsBinding
 import com.example.cryptocurrency.presentation.coindetail.CoinDetailFragment
@@ -31,7 +31,8 @@ class CoinsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return binding.root
@@ -44,7 +45,6 @@ class CoinsFragment : Fragment() {
 
         viewModel.loadCoins()
     }
-
 
     private fun initView() {
         binding.coinsRecyclerView.apply {

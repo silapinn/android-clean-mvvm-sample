@@ -2,8 +2,6 @@ package com.example.cryptocurrency.di
 
 import com.example.cryptocurrency.common.AuthorizationInterceptor
 import com.example.cryptocurrency.data.network.CoinApi
-import com.example.cryptocurrency.data.repository.datasource.CoinsDataSource
-import com.example.cryptocurrency.data.repository.datasource.CoinsRemoteDataSource
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
@@ -47,7 +45,6 @@ val networkModule = module {
             .addConverterFactory(get())
             .build()
     }
-
 
     single<CoinApi> {
         get<Retrofit>().create(CoinApi::class.java)

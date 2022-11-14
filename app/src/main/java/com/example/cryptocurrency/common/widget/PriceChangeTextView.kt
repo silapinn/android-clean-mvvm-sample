@@ -25,7 +25,7 @@ class PriceChangeTextView(
                 0,
                 0,
                 0
-            );
+            )
         } else {
             setTextColor(ContextCompat.getColor(context, R.color.red))
             setCompoundDrawablesWithIntrinsicBounds(
@@ -33,8 +33,7 @@ class PriceChangeTextView(
                 0,
                 0,
                 0
-            );
-
+            )
         }
         text = change.toString()
     }

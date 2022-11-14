@@ -8,7 +8,6 @@ import com.example.cryptocurrency.domain.usecase.GetCoinDetailsUseCase
 import com.example.cryptocurrency.domain.usecase.GetCoinDetailsUseCaseImpl
 import com.example.cryptocurrency.domain.usecase.GetCoinsUseCase
 import com.example.cryptocurrency.domain.usecase.GetCoinsUseCaseImpl
-import com.example.cryptocurrency.presentation.coindetail.CoinDetailFragment
 import com.example.cryptocurrency.presentation.coindetail.CoinDetailViewModel
 import com.example.cryptocurrency.presentation.coins.CoinsActivity
 import com.example.cryptocurrency.presentation.coins.CoinsFragment

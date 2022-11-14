@@ -9,8 +9,8 @@ class ScrollEndListener(val onScrollEnd: () -> Unit) : RecyclerView.OnScrollList
         if (dy > 0) {
             val layoutManager = recyclerView.layoutManager
             if (layoutManager is LinearLayoutManager) {
-                val visibleItemCount = layoutManager.childCount;
-                val totalItemCount = layoutManager.itemCount;
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
                 val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
 
                 if ((visibleItemCount + firstVisiblePosition) >= totalItemCount) {
@@ -18,6 +18,5 @@ class ScrollEndListener(val onScrollEnd: () -> Unit) : RecyclerView.OnScrollList
                 }
             }
         }
-
     }
 }
